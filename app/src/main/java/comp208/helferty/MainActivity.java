@@ -30,6 +30,9 @@ public class MainActivity extends AppCompatActivity {
         initGame();
     }
 
+    //Defines an OnClickListener for each of the ImageViews.
+    //Whenever a square is clicked, the View object below will become a reference to that specific
+    //ImageView selected.
     View.OnClickListener ivListener = new View.OnClickListener()
     {
         @Override
@@ -39,34 +42,42 @@ public class MainActivity extends AppCompatActivity {
 
             Card card = (Card) iv.getTag();
 
+            boolean match = false;
+
             if(card.imageId != R.drawable.card)
                 Toast.makeText(MainActivity.this, "Invalid Move", Toast.LENGTH_SHORT).show();
-            else if (game.cardSelected < 2)
+            else /*if (game.cardSelected < 2)*/
             {
                 switch (card.faceValue)
                 {
                     case 1:
                         iv.setImageResource(R.drawable.ace_of_spades2);
+                        card.imageId = R.drawable.ace_of_spades2;
                         game.cardSelected++;
                         break;
                     case 2:
                         iv.setImageResource(R.drawable.ten_of_spades);
+                        card.imageId = R.drawable.ten_of_spades;
                         game.cardSelected++;
                         break;
                     case 3:
                         iv.setImageResource(R.drawable.jack_of_spades2);
+                        card.imageId = R.drawable.jack_of_spades2;
                         game.cardSelected++;
                         break;
                     case 4:
                         iv.setImageResource(R.drawable.queen_of_spades2);
+                        card.imageId = R.drawable.queen_of_spades2;
                         game.cardSelected++;
                         break;
                     case 5:
                         iv.setImageResource(R.drawable.king_of_spades2);
+                        card.imageId = R.drawable.king_of_spades2;
                         game.cardSelected++;
                         break;
                     case 6:
                         iv.setImageResource(R.drawable.red_joker);
+                        card.imageId = R.drawable.red_joker;
                         game.cardSelected++;
                         break;
                 }
@@ -85,6 +96,7 @@ public class MainActivity extends AppCompatActivity {
 
                 iv.setOnClickListener(ivListener);
 
+                //When game starts, all cards are facedown.
                 iv.setImageResource(R.drawable.card);
 
                 Card card = new Card();
@@ -100,4 +112,7 @@ public class MainActivity extends AppCompatActivity {
             }
         }
     }
+
+
 }
+

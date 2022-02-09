@@ -10,6 +10,9 @@ import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.Toast;
 
+import java.util.ArrayList;
+import java.util.Collections;
+
 public class MainActivity extends AppCompatActivity {
 
     final int ROWS = 4;
@@ -21,10 +24,27 @@ public class MainActivity extends AppCompatActivity {
 
     Game game = new Game();
 
+
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        //Populate cardFaces ArrayList
+        game.cardFaces.add(R.drawable.ace);
+        game.cardFaces.add(R.drawable.ten);
+        game.cardFaces.add(R.drawable.jack);
+        game.cardFaces.add(R.drawable.queen);
+        game.cardFaces.add(R.drawable.king);
+        game.cardFaces.add(R.drawable.joker);
+        game.cardFaces.add(R.drawable.ace);
+        game.cardFaces.add(R.drawable.ten);
+        game.cardFaces.add(R.drawable.jack);
+        game.cardFaces.add(R.drawable.queen);
+        game.cardFaces.add(R.drawable.king);
+        game.cardFaces.add(R.drawable.joker);
 
         mgBoard = findViewById(R.id.mgBoard);
         initGame();
@@ -46,48 +66,22 @@ public class MainActivity extends AppCompatActivity {
 
             if(card.imageId != R.drawable.card)
                 Toast.makeText(MainActivity.this, "Invalid Move", Toast.LENGTH_SHORT).show();
-            else /*if (game.cardSelected < 2)*/
+            else if (game.selectCtr < 2)
             {
-                switch (card.faceValue)
-                {
-                    case 1:
-                        iv.setImageResource(R.drawable.ace_of_spades2);
-                        card.imageId = R.drawable.ace_of_spades2;
-                        game.cardSelected++;
-                        break;
-                    case 2:
-                        iv.setImageResource(R.drawable.ten_of_spades);
-                        card.imageId = R.drawable.ten_of_spades;
-                        game.cardSelected++;
-                        break;
-                    case 3:
-                        iv.setImageResource(R.drawable.jack_of_spades2);
-                        card.imageId = R.drawable.jack_of_spades2;
-                        game.cardSelected++;
-                        break;
-                    case 4:
-                        iv.setImageResource(R.drawable.queen_of_spades2);
-                        card.imageId = R.drawable.queen_of_spades2;
-                        game.cardSelected++;
-                        break;
-                    case 5:
-                        iv.setImageResource(R.drawable.king_of_spades2);
-                        card.imageId = R.drawable.king_of_spades2;
-                        game.cardSelected++;
-                        break;
-                    case 6:
-                        iv.setImageResource(R.drawable.red_joker);
-                        card.imageId = R.drawable.red_joker;
-                        game.cardSelected++;
-                        break;
-                }
+                card.imageId = card.faceValue;
+                iv.setImageResource(card.faceValue);
+                game.selectCtr++;
             }
+
         }
     };
 
     private void initGame() {
 
-        game.cardSelected = 0;
+        int cardCtr = 0;
+        Collections.shuffle(game.cardFaces);
+
+        game.selectCtr = 0;
         for (int row = 0; row < ROWS; row++) {
             TableRow tableRow = (TableRow) mgBoard.getChildAt(row);
 
@@ -104,15 +98,20 @@ public class MainActivity extends AppCompatActivity {
                 card.row = row;
                 card.col = col;
 
-                card.faceValue = (int)Math.floor(Math.random()*(6-1+1)+1);
+                card.faceValue = game.cardFaces.get(cardCtr);
+                cardCtr++;
 
                 mgGrid[row][col] = card;
 
                 iv.setTag(card);
             }
         }
+
     }
 
-
+    private boolean checkChoice(int choice1, int choice2)
+    {
+        return true;
+    }
 }
 

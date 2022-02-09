@@ -64,14 +64,27 @@ public class MainActivity extends AppCompatActivity {
 
             boolean match = false;
 
-            if(card.imageId != R.drawable.card)
-                Toast.makeText(MainActivity.this, "Invalid Move", Toast.LENGTH_SHORT).show();
-            else if (game.selectCtr < 2)
-            {
-                card.imageId = card.faceValue;
+            if(card.imageId != R.drawable.card ) {
+                iv.setImageResource(R.drawable.card);
+                card.imageId = R.drawable.card;
+                game.selectCtr--;
+            }
+            else if (card.imageId == R.drawable.card && game.selectCtr < 2){
                 iv.setImageResource(card.faceValue);
+                card.imageId = card.faceValue;
                 game.selectCtr++;
             }
+
+
+
+//            if(card.imageId != R.drawable.card)
+//                Toast.makeText(MainActivity.this, "Invalid Move", Toast.LENGTH_SHORT).show();
+//            else if (game.selectCtr < 2)
+//            {
+//                card.imageId = card.faceValue;
+//                iv.setImageResource(card.faceValue);
+//                game.selectCtr++;
+//            }
 
         }
     };

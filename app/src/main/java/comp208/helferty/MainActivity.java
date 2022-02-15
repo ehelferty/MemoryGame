@@ -1,10 +1,12 @@
 package comp208.helferty;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TableLayout;
@@ -28,16 +30,10 @@ public class MainActivity extends AppCompatActivity {
     ImageView choice1;
     ImageView choice2;
 
-
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-        if(getIntent().getBooleanExtra("EXIT", false)){
-            finish();
-        }
 
         //Populate cardFaces ArrayList with 2 of each card.
         game.cardFaces.add(R.drawable.ace);
@@ -69,21 +65,8 @@ public class MainActivity extends AppCompatActivity {
             ImageView iv = (ImageView) view;
             Card card = (Card) iv.getTag();
 
-            //If back of card is not being displayed when clicked, it will be changed so that it is.
-            if(card.imageId != R.drawable.card ) {
-                iv.setImageResource(R.drawable.card);
-                card.imageId = R.drawable.card;
-
-                //selectCtr keeps track of how many cards are flipped, and cardsFlipped boolean
-                //won't allow player to continue until both cards are returned to face down, unless
-                // there's a match.
-                game.selectCtr--;
-                if(game.selectCtr == 0)
-                {
-                    game.cardsFlipped = false;
-                }
-            }
-            else if (card.imageId == R.drawable.card && game.selectCtr < 2 && !game.cardsFlipped){
+            if (card.imageId == R.drawable.card && game.selectCtr < 2)
+            {
                 iv.setImageResource(card.faceValue);
                 card.imageId = card.faceValue;
                 game.selectCtr++;
@@ -94,31 +77,34 @@ public class MainActivity extends AppCompatActivity {
                 {
                     card1 = card;
                     choice1 = iv;
-
                 }
                 //If this is the second card flipped, Card object and ImageView object are assigned
                 //to card2 Card and choice2 ImageView
                 else if(game.selectCtr == 2)
                 {
-                    game.cardsFlipped = true;
                     game.guessCtr++;
                     card2=card;
                     choice2=iv;
 
                     //If the two flipped cards have the same faceValue, their ImageView clickListeners
-                    //are disabled, and card's flipped ctr values and booleans are reset.
+                    //are disabled, and cards flipped ctr value is reset. Otherwise they are
+                    //turned face down after 0.75 seconds
                     if(card2.faceValue == card1.faceValue)
                     {
                         choice1.setOnClickListener(null);
                         choice2.setOnClickListener(null);
+
                         game.scoreCtr++;
-                        game.cardsFlipped = false;
                         game.selectCtr=0;
 
                         //If all matches are found, move to next page.
                         if(game.scoreCtr == 6){
                             switchScreen(game.guessCtr);
                         }
+                    }
+                    else
+                    {
+                        turnCardsDown(750);
                     }
                 }
             }
@@ -135,7 +121,6 @@ public class MainActivity extends AppCompatActivity {
         game.selectCtr = 0;
         game.guessCtr = 0;
         game.scoreCtr = 0;
-        game.cardsFlipped=false;
 
         for (int row = 0; row < ROWS; row++) {
             TableRow tableRow = (TableRow) mgBoard.getChildAt(row);
@@ -149,7 +134,7 @@ public class MainActivity extends AppCompatActivity {
                 iv.setImageResource(R.drawable.card);
 
                 Card card = new Card();
-                card.imageId = R.drawable.card;
+                card.turnFaceDown();
                 card.row = row;
                 card.col = col;
 
@@ -163,18 +148,58 @@ public class MainActivity extends AppCompatActivity {
                 iv.setTag(card);
             }
         }
+    }
+
+    //Receives the number of guesses and sends to new activity.
+    private void switchScreen(int noGuesses){
+
+        Intent intent = new Intent(MainActivity.this, ScoreScreen.class);
+
+        intent.putExtra("data",noGuesses);
+
+        startActivityForResult(intent,1);
 
     }
 
-    //Receives the number of guesses and sends to new activity. Resets game and switches screens.
-    private void switchScreen(int noGuesses){
-        Intent intent = new Intent(this, ScoreScreen.class);
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data){
+        super.onActivityResult(requestCode, resultCode, data);
+        if(resultCode==0)
+            finish();
+        else{
+            initGame();
+        }
+    }
 
-        intent.putExtra("data","You made " + noGuesses + " guesses!");
+    /**
+     * Handler is something that is used to run a piece of code.
+     * Similar to function call, but sends a message to MainActivity
+     * and says "now's the time to do this" after a certain delay
+     */
+    Handler flipCardHandler = new Handler();
 
-        startActivity(intent);
+    /**
+     * flip
+     * -a runnable object that is called via a post message from a handler (i.e. flipHandler)
+     * -Runnable is a piece of code that is called through a POST or POST delayed,which runs
+     * something in the future.
+     */
+    Runnable flip =()->{
+        choice1.setImageResource(R.drawable.card);
+        choice2.setImageResource(R.drawable.card);
+        ((Card) choice1.getTag()).turnFaceDown();
+        ((Card) choice2.getTag()).turnFaceDown();
+        game.selectCtr=0;
+    };
 
-        initGame();
+    /**
+     * turnCardsDown
+     * - post a message to run 'flip' after specified delay
+     * @param delay
+     */
+    public void turnCardsDown(int delay)
+    {
+        flipCardHandler.postDelayed(flip,delay);
     }
 
 }

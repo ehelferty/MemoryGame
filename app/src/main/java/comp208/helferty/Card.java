@@ -7,6 +7,10 @@ public class Card {
     int row;
     int col;
 
+    public void turnFaceDown()
+    {
+        this.imageId=R.drawable.card;
+    }
 
 
 

@@ -2,39 +2,43 @@ package comp208.helferty;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
 
 public class ScoreScreen extends AppCompatActivity {
+
+    Button btnNewGame;
+    Button btnExit;
+    TextView txtGuesses;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_score_screen);
 
-        Bundle extras = getIntent().getExtras();
+        btnNewGame = findViewById(R.id.btnNewGame);
+        btnExit = findViewById(R.id.btnExit);
+        txtGuesses = findViewById(R.id.txtGuesses);
+        txtGuesses.setText("It took you " + getIntent().getExtras().getInt("data"));
 
-        TextView guessOutput = findViewById(R.id.finalScore);
+        btnNewGame.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                setResult(1);
+                ScoreScreen.this.finish();
+            }
+        });
 
-        guessOutput.setText(extras.getString("data"));
+        btnExit.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                setResult(0);
+                ScoreScreen.this.finish();
+            }
+        });
 
     }
 
-    //Returns to previous page.
-    public void newGame(View view){
-        finish();
-    }
-
-    //Exits application
-    public void exitGame(View view){
-        Intent leaveApp = new Intent(getApplicationContext(), MainActivity.class);
-        leaveApp.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        leaveApp.putExtra("EXIT", true);
-        startActivity(leaveApp);
-
-        finish();
-        System.exit(0);
-    }
 }
